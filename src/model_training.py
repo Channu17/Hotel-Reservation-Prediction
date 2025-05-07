@@ -11,6 +11,10 @@ from config.model_params import *
 from utils.common_functions import read_yaml_file, load_data
 from scipy.stats import randint
 
+import mlflow
+import mlflow.sklearn
+
+
 logger = get_logger(__name__)
 
 class ModelTraining:
@@ -88,9 +92,9 @@ class ModelTraining:
             logger.info(f"Model evaluation completed successfully")
             
             return {
-                'accuracy': accuracy_score,
+                'accuracy': accuracy,
                 'precision': precision,
-                'recall': recall_score,
+                'recall': recall,
                 'f1_score': f1
             }
         except Exception as e:
@@ -110,19 +114,32 @@ class ModelTraining:
     
     def run(self):
         try:
-            logger.info("Starting the model training process")
+            with mlflow.start_run():
+                
+                logger.info("Starting the model training process")
+                logger.info("starting our MLFLOW Experiment")   
+                logger.info("logging the training and testing dataset to mlflow")
+                mlflow.log_artifact(self.train_path, artifact_path="datasets")
+                mlflow.log_artifact(self.test_path, artifact_path="datasets")
+        
+                
+                X_train, y_train, X_test, y_test = self.load_and_split_file()
+                
+                model = self.train_lgbm(X_train, y_train)
+                
+                evaluation_metrics = self.evaluate_model(model, X_test, y_test)
+                
+                self.save_model(model)
+                logger.info("logging the model to mlflow")  
+                mlflow.log_artifact(self.model_output_dir, artifact_path="models") 
+                
+                logger.info("logging the model parameters to mlflow")         
+                mlflow.log_params(model.get_params()) 
+                
+                logger.info("logging the evaluation metrics to mlflow")  
+                mlflow.log_metrics(evaluation_metrics) 
+                logger.info("Model training process completed successfully")
             
-            X_train, y_train, X_test, y_test = self.load_and_split_file()
-            
-            model = self.train_lgbm(X_train, y_train)
-            
-            evaluation_metrics = self.evaluate_model(model, X_test, y_test)
-            
-            self.save_model(model)
-            
-            logger.info("Model training process completed successfully")
-            
-            return evaluation_metrics
         except Exception as e:
             logger.error(f"Error in model training process: {e}")
             raise CustomException("Model training process failed", e)
