@@ -21,8 +21,8 @@ RUN groupadd -f docker && \
 RUN mkdir -p /var/lib/docker
 VOLUME /var/lib/docker
 
+# Create a symbolic link for python3 (must be done as root)
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
 # Switch back to the Jenkins user
 USER jenkins
-
-# Create a symbolic link for python3
-RUN ln -sf /usr/bin/python3 /usr/bin/python
