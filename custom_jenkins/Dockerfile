@@ -1,4 +1,3 @@
-
 # Use the Jenkins image as the base image
 FROM jenkins/jenkins:lts
 
@@ -24,3 +23,6 @@ VOLUME /var/lib/docker
 
 # Switch back to the Jenkins user
 USER jenkins
+
+# Create a symbolic link for python3
+RUN ln -sf /usr/bin/python3 /usr/bin/python
