@@ -11,6 +11,7 @@ RUN apt-get update -y && \
     echo "deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable" > /etc/apt/sources.list.d/docker.list && \
     apt-get update -y && \
     apt-get install -y docker-ce docker-ce-cli containerd.io && \
+    apt-get install -y python3-venv && \
     apt-get clean
 
 # Add Jenkins user to the Docker group (create if it doesn't exist)
