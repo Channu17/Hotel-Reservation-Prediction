@@ -21,8 +21,7 @@ pipeline{
                 script{
                     echo 'creating virtual environment'
                     sh '''
-                    ln -sf /usr/bin/python3 /usr/bin/python
-                    python -m venv ${VENV_DIR}
+                    python3 -m venv ${VENV_DIR}
                     . ${VENV_DIR}/bin/activate
                     pip install --upgrade pip
                     pip install -e .
